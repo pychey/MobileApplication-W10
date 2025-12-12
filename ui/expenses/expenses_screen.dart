@@ -4,7 +4,12 @@ import 'expense_form.dart';
 import 'expense_item.dart';
 
 class ExpensesScreen extends StatefulWidget {
-  const ExpensesScreen({super.key});
+  final List<Expense> initializeExpenses;
+
+  const ExpensesScreen({
+    super.key,
+    required this.initializeExpenses
+  });
 
   @override
   State<ExpensesScreen> createState() {
@@ -13,20 +18,7 @@ class ExpensesScreen extends StatefulWidget {
 }
 
 class _ExpensesScreenState extends State<ExpensesScreen> {
-  final List<Expense> _expenses = [
-    Expense(
-      title: 'Flutter Course',
-      amount: 19.99,
-      date: DateTime.now(),
-      category: Category.work,
-    ),
-    Expense(
-      title: 'Cinema',
-      amount: 15.69,
-      date: DateTime.now(),
-      category: Category.leisure,
-    ),
-  ];
+  late List<Expense> expenses = widget.initializeExpenses;
 
   void onAddClicked(BuildContext context)  {
     showModalBottomSheet<Expense>(
@@ -48,13 +40,18 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
             onPressed: () => {onAddClicked(context)},
             icon: Icon(Icons.add),
           ),
+          SizedBox(width: 18)
         ],
-        backgroundColor: Colors.blue[700],
-        title: const Text('Ronan-The-Best Expenses App'),
+        backgroundColor: Colors.blue[900],
+        foregroundColor: Colors.white,
+        title: const Text('Ronan The Best Expense App'),
       ),
-      body: ListView.builder(
-        itemCount: _expenses.length,
-        itemBuilder: (context, index) => ExpenseItem(expense: _expenses[index]),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: ListView.builder(
+          itemCount: expenses.length,
+          itemBuilder: (context, index) => ExpenseItem(expense: expenses[index]),
+        ),
       ),
     );
   }
