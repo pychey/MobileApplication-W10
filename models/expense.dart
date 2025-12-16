@@ -25,9 +25,4 @@ class Expense {
 
   Expense({String? id, required this.title, required this.amount, DateTime? date, required this.category})
     : id = id ?? uuid.v4(), date = date ?? DateTime.now();
-
-  @override
-  String toString() {
-    return "Expense $title , amount $amount";
-  }
 }
