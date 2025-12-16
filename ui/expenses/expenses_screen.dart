@@ -21,7 +21,7 @@ class ExpensesScreen extends StatefulWidget {
 class _ExpensesScreenState extends State<ExpensesScreen> {
   late List<Expense> expenses = widget.initializeExpenses;
 
-  void onAddClicked(BuildContext context) async {
+  void onAddClicked() async {
     final expense = await showModalBottomSheet<Expense>(
       isScrollControlled: false,
       context: context,
@@ -35,10 +35,27 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
     }
   }
 
-  void removeExpense(String expenseId) {
+  void removeExpense(Expense expense) {
+    int index = expenses.indexOf(expense);
+
     setState(() {
-      expenses.removeWhere((expense) => expense.id == expenseId);
+      expenses.remove(expense);
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Expense Deleted'),
+      duration: Duration(seconds: 3),
+      persist: false,
+      action: SnackBarAction(
+        label: 'Undo', 
+        onPressed: () {
+          setState(() {
+            expenses.insert(index, expense);
+          });
+        }
+        ),
+      )
+    );
   }
 
   @override
@@ -48,7 +65,7 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
       appBar: AppBar(
         actions: [
           IconButton(
-            onPressed: () => onAddClicked(context),
+            onPressed: onAddClicked,
             icon: Icon(Icons.add),
           ),
           SizedBox(width: 18)
@@ -64,14 +81,16 @@ class _ExpensesScreenState extends State<ExpensesScreen> {
           children: [
             StatisticCard(expenses: expenses),
             Expanded(
-              child: ListView.builder(
+              child: expenses.isEmpty 
+              ? Center(child: Text('No Expenses Found, Start Adding Some!')) 
+              : ListView.builder(
                 itemCount: expenses.length,
                 itemBuilder: (context, index) {
                   final expense = expenses[index];
                   return Dismissible(
                     key: ValueKey(expense.id), 
                     direction: DismissDirection.endToStart,
-                    onDismissed: (_) => removeExpense(expense.id),
+                    onDismissed: (_) => removeExpense(expense),
                     child: ExpenseItem(expense: expense),
                   );
                 }
